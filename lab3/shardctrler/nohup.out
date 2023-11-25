@@ -1,0 +1,86 @@
+CompileCommand: exclude com/intellij/openapi/vfs/impl/FilePartNodeRoot.trieDescend bool exclude = true
+2023-10-26 09:45:30,571 [   1887]   WARN - #c.i.u.s.SvgCacheManager - Icon cache will be recreated or previous version of data reused, (db=/home/xik/.cache/JetBrains/GoLand2022.3/icons-v6.db)
+2023-10-26 09:45:31,109 [   2425]   WARN - #c.i.u.ExperimentalUIImpl - Can't find GridIconMappings.json
+2023-10-26 09:45:31,273 [   2589]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Visual Studio" not found PluginDescriptor(name=IDEA CORE, id=com.intellij, descriptorPath=plugin.xml, path=/usr/local/GoLand/lib, version=223.8214.59, package=com.intellij.structuralsearch, isBundled=true)
+2023-10-26 09:45:31,279 [   2595]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Eclipse" not found PluginDescriptor(name=IDEA CORE, id=com.intellij, descriptorPath=plugin.xml, path=/usr/local/GoLand/lib, version=223.8214.59, package=com.intellij.structuralsearch, isBundled=true)
+2023-10-26 09:45:31,280 [   2596]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "NetBeans 6.5" not found PluginDescriptor(name=IDEA CORE, id=com.intellij, descriptorPath=plugin.xml, path=/usr/local/GoLand/lib, version=223.8214.59, package=com.intellij.structuralsearch, isBundled=true)
+2023-10-26 09:45:31,280 [   2596]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Visual Studio" not found PluginDescriptor(name=IDEA CORE, id=com.intellij, descriptorPath=plugin.xml, path=/usr/local/GoLand/lib, version=223.8214.59, package=com.intellij.structuralsearch, isBundled=true)
+2023-10-26 09:45:31,303 [   2619]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Visual Studio" not found PluginDescriptor(name=HTML Tools, id=HtmlTools, descriptorPath=plugin.xml, path=/usr/local/GoLand/plugins/html-tools, version=223.8214.59, package=null, isBundled=true)
+2023-10-26 09:45:31,324 [   2640]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Eclipse" not found PluginDescriptor(name=GitHub, id=org.jetbrains.plugins.github, descriptorPath=plugin.xml, path=/usr/local/GoLand/plugins/vcs-github, version=223.8214.59, package=org.jetbrains.plugins.github, isBundled=true)
+2023-10-26 09:45:31,328 [   2644]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Eclipse" not found PluginDescriptor(name=JavaScript and TypeScript, id=JavaScript, descriptorPath=plugin.xml, path=/usr/local/GoLand/plugins/javascript-impl, version=223.8214.59, package=null, isBundled=true)
+2023-10-26 09:45:31,328 [   2644]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Visual Studio" not found PluginDescriptor(name=JavaScript and TypeScript, id=JavaScript, descriptorPath=plugin.xml, path=/usr/local/GoLand/plugins/javascript-impl, version=223.8214.59, package=null, isBundled=true)
+2023-10-26 09:45:31,331 [   2647]   WARN - #c.i.o.a.i.ActionManagerImpl - keymap "Eclipse" not found PluginDescriptor(name=Space, id=com.jetbrains.space, moduleName=intellij.space.vcs, descriptorPath=intellij.space.vcs.xml, path=/usr/local/GoLand/plugins/space, version=223.8214.59, package=com.intellij.space.vcs, isBundled=true)
+2023-10-26 09:45:31,441 [   2757]   WARN - #c.i.f.ProductivityFeaturesRegistryImpl - Feature with id 'editing.completion.replace' is overridden by: id = [editing.completion.replace], displayName = [Replace By when using lookup], groupId = [completion], usageCount = [0]
+2023-10-26 09:45:31,442 [   2758]   WARN - #c.i.f.ProductivityFeaturesRegistryImpl - Feature with id 'editing.completion.finishByCtrlDot' is overridden by: id = [editing.completion.finishByCtrlDot], displayName = [Finish lookup with Ctrl+Dot], groupId = [completion], usageCount = [0]
+2023-10-26 09:45:31,442 [   2758]   WARN - #c.i.f.ProductivityFeaturesRegistryImpl - Feature with id 'editing.completion.finishByDotEtc' is overridden by: id = [editing.completion.finishByDotEtc], displayName = [Finish lookup with special characters], groupId = [completion], usageCount = [0]
+2023-10-26 09:45:31,443 [   2759]   WARN - #c.i.f.ProductivityFeaturesRegistryImpl - Feature with id 'scratch' is overridden by: id = [scratch], displayName = [New scratch file], groupId = [editing], usageCount = [0]
+2023-10-26 09:45:31,444 [   2760]   WARN - #c.i.f.ProductivityFeaturesRegistryImpl - Feature with id 'codeassists.quickdefinition' is overridden by: id = [codeassists.quickdefinition], displayName = [Quick Definition lookup], groupId = [codeassists], usageCount = [0]
+2023-10-26 09:45:31,444 [   2760]   WARN - #c.i.f.ProductivityFeaturesRegistryImpl - Feature with id 'codeassists.comment.line' is overridden by: id = [codeassists.comment.line], displayName = [Comment or uncomment the current line], groupId = [codeassists], usageCount = [0]
+2023-10-26 09:45:33,887 [   5203]   WARN - #c.i.e.RunManager - Must be not called before project components initialized
+Info  | RdCoroutineScope          | 58:DefaultDispatcher-worker-41 | RdCoroutineHost overridden 
+2023-10-26 09:45:35,614 [   6930]   WARN - #c.i.o.a.i.ActionUpdater - 351 ms to grab EDT for ToolWindowHeader$2#update@ToolwindowTitle (com.intellij.toolWindow.ToolWindowHeader$2)
+2023-10-26 09:45:36,690 [   8006]   WARN - #c.i.o.a.i.ActionUpdater - 1020 ms to grab EDT for ProjectToolbarWidgetAction#update@MainToolbar (com.intellij.openapi.wm.impl.headertoolbar.ProjectToolbarWidgetAction)
+2023-10-26 09:45:36,690 [   8006]   WARN - #c.i.o.a.i.ActionUpdater - 1027 ms to grab EDT for ToolWindowHeader$2#update@ToolwindowTitle (com.intellij.toolWindow.ToolWindowHeader$2)
+2023-10-26 09:45:37,894 [   9210]   WARN - #c.i.o.a.i.ActionUpdater - 364 ms to grab EDT for EditorMarkupModelImpl$TrafficLightAction#update@EditorInspectionsToolbar (com.intellij.openapi.editor.impl.EditorMarkupModelImpl$TrafficLightAction)
+2023-10-26 09:45:38,190 [   9506]   WARN - #c.i.o.w.i.c.h.t.MainMenuButton - rootPane is not set, MainMenu button listeners are not installed
+2023-10-26 09:45:38,584 [   9900]   WARN - #c.i.o.a.i.ActionUpdater - 366 ms to grab EDT for ProjectToolbarWidgetAction#update@MainToolbar (com.intellij.openapi.wm.impl.headertoolbar.ProjectToolbarWidgetAction)
+2023-10-26 09:45:39,652 [  10968]   WARN - #c.i.o.a.i.ActionUpdater - 318 ms to grab EDT for ToolWindowHeader$2#update@ToolwindowTitle (com.intellij.toolWindow.ToolWindowHeader$2)
+2023-10-26 09:45:55,089 [  26405]   WARN - #c.i.u.i.d.ChangedFilesPushedDiagnostic - Failed to read /home/xik/.cache/JetBrains/GoLand2022.3/log/indexing-diagnostic/6.5840.a88146b5/changed-files-pushing-events.json
+com.fasterxml.jackson.core.JsonParseException: Illegal character ((CTRL-CHAR, code 0)): only regular white space (\r, \n, \t) is allowed between tokens
+ at [Source: (String)"\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000{"reason":"Push on VFS changes","startTime":"2023-10-16T22:42:56.581886336+08:00[Asia/Shanghai]","duration":13582722,"isCancelled":false}"; line: 1, column: 2]
+	at com.fasterxml.jackson.core.JsonParser._constructError(JsonParser.java:2418)
+	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportError(ParserMinimalBase.java:749)
+	at com.fasterxml.jackson.core.base.ParserMinimalBase._throwInvalidSpace(ParserMinimalBase.java:727)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._skipWSOrEnd(ReaderBasedJsonParser.java:2532)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser.nextToken(ReaderBasedJsonParser.java:698)
+	at com.fasterxml.jackson.databind.ObjectMapper._initForReading(ObjectMapper.java:4784)
+	at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:4690)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3652)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3635)
+	at com.intellij.util.indexing.diagnostic.ChangedFilesPushedDiagnostic.readEvents(ChangedFilesPushedDiagnostic.kt:68)
+	at com.intellij.util.indexing.diagnostic.IndexDiagnosticDumper.dumpProjectIndexingHistoryToLogSubdirectory(IndexDiagnosticDumper.kt:203)
+	at com.intellij.util.indexing.diagnostic.IndexDiagnosticDumper.onIndexingFinished$lambda$0(IndexDiagnosticDumper.kt:156)
+	at com.intellij.util.concurrency.BoundedTaskExecutor.doRun(BoundedTaskExecutor.java:243)
+	at com.intellij.util.concurrency.BoundedTaskExecutor.access$200(BoundedTaskExecutor.java:29)
+	at com.intellij.util.concurrency.BoundedTaskExecutor$1.executeFirstTaskAndHelpQueue(BoundedTaskExecutor.java:216)
+	at com.intellij.util.concurrency.BoundedTaskExecutor$1.run(BoundedTaskExecutor.java:208)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:702)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:699)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1.run(Executors.java:699)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2023-10-26 09:47:04,949 [  96265]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 2130 exceeds the document length 2129
+2023-10-26 09:50:32,552 [ 303868]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 7127 exceeds the document length 7126
+2023-10-26 19:58:19,584 [36770900]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 7636 exceeds the document length 7633
+2023-10-26 20:40:23,227 [39294543]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 8452 exceeds the document length 8448
+2023-10-26 20:48:08,196 [39759512]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 9045 exceeds the document length 9044
+2023-10-26 20:52:25,273 [40016589]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 9242 exceeds the document length 9241
+2023-10-26 20:59:29,932 [40441248]   WARN - #c.i.p.i.s.c.FormattingRangesExtender - The given range 9325 exceeds the document length 9323
+2023-10-26 21:40:13,824 [42885140]   WARN - #c.i.u.i.d.ChangedFilesPushedDiagnostic - Failed to read /home/xik/.cache/JetBrains/GoLand2022.3/log/indexing-diagnostic/6.5840.a88146b5/changed-files-pushing-events.json
+com.fasterxml.jackson.core.JsonParseException: Illegal character ((CTRL-CHAR, code 0)): only regular white space (\r, \n, \t) is allowed between tokens
+ at [Source: (String)"\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000{"reason":"Push on VFS changes","startTime":"2023-10-16T22:42:56.581886336+08:00[Asia/Shanghai]","duration":13582722,"isCancelled":false}"; line: 1, column: 2]
+	at com.fasterxml.jackson.core.JsonParser._constructError(JsonParser.java:2418)
+	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportError(ParserMinimalBase.java:749)
+	at com.fasterxml.jackson.core.base.ParserMinimalBase._throwInvalidSpace(ParserMinimalBase.java:727)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._skipWSOrEnd(ReaderBasedJsonParser.java:2532)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser.nextToken(ReaderBasedJsonParser.java:698)
+	at com.fasterxml.jackson.databind.ObjectMapper._initForReading(ObjectMapper.java:4784)
+	at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:4690)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3652)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3635)
+	at com.intellij.util.indexing.diagnostic.ChangedFilesPushedDiagnostic.readEvents(ChangedFilesPushedDiagnostic.kt:68)
+	at com.intellij.util.indexing.diagnostic.IndexDiagnosticDumper.dumpProjectIndexingHistoryToLogSubdirectory(IndexDiagnosticDumper.kt:203)
+	at com.intellij.util.indexing.diagnostic.IndexDiagnosticDumper.onIndexingFinished$lambda$0(IndexDiagnosticDumper.kt:156)
+	at com.intellij.util.concurrency.BoundedTaskExecutor.doRun(BoundedTaskExecutor.java:243)
+	at com.intellij.util.concurrency.BoundedTaskExecutor.access$200(BoundedTaskExecutor.java:29)
+	at com.intellij.util.concurrency.BoundedTaskExecutor$1.executeFirstTaskAndHelpQueue(BoundedTaskExecutor.java:216)
+	at com.intellij.util.concurrency.BoundedTaskExecutor$1.run(BoundedTaskExecutor.java:208)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:702)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1$1.run(Executors.java:699)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.util.concurrent.Executors$PrivilegedThreadFactory$1.run(Executors.java:699)
+	at java.base/java.lang.Thread.run(Thread.java:833)
