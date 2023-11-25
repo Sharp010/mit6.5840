@@ -6,7 +6,7 @@ package raft
 //
 // we will use the original persister.go to test your code for grading.
 // so, while you can modify this code to help you debug, please
-// test with the original before submitting.
+// test with the original before submitting....
 //
 
 import "sync"
