@@ -47,7 +47,7 @@ type ShardKV struct {
 
 	config     shardctrler.Config
 	reConfigs  []shardctrler.Config
-	auth       []bool
+	auth       []int
 	replyTable []map[int64]Ans
 	kvStore    []map[string]string
 
@@ -65,18 +65,21 @@ func (kv *ShardKV) ShardKvs(args *ShardKvsArgs, reply *ShardKvsReply) {
 	}()
 	Debug_(dClient, "G%d S%d  <-[SKV] Sid %d auth %v ACfg %d NCfg %d",
 		kv.gid, kv.me, args.Shard, kv.auth[args.Shard], args.ConfigNum, kv.config.Num)
-	kv.checkUpdate()
+	// 优化？ G2的config更新滞后于G1
+	if args.ConfigNum > kv.config.Num {
+		kv.checkUpdate()
+	}
 	// config检查
 	if args.ConfigNum > kv.config.Num {
 		reply.Err = ErrWrongGroup
 		return
 	}
 	// 操作权检查 + 识别重复
-	if kv.auth[args.Shard] == true || args.ConfigNum < kv.config.Num {
+	if kv.auth[args.Shard] == YES || args.ConfigNum < kv.config.Num {
 		reply.Err = OK
 		return
 	}
-	// Leader检查,只允许leader发送Kv
+	// Leader检查,只允许leader接受Kv
 	_, isLeader := kv.rf.GetState()
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -105,7 +108,7 @@ func (kv *ShardKV) ShardKvs(args *ShardKvsArgs, reply *ShardKvsReply) {
 			reply.Err = ErrWrongLeader
 			return
 		}
-		if kv.auth[args.Shard] {
+		if kv.auth[args.Shard] == YES {
 			reply.Err = OK
 			return
 		}
@@ -116,65 +119,79 @@ func (kv *ShardKV) ShardKvs(args *ShardKvsArgs, reply *ShardKvsReply) {
 
 // 将shard对应的Kv pairs发送给对应的group
 func (kv *ShardKV) deliverShardKvs(configNum int, shards map[int]int) {
+	// TODO
 	for shard, gid := range shards {
-		// 一个任务对应一个goroutine
+		// 一对一
+		if kv.auth[shard] == Sending {
+			continue
+		}
+		// 一个goroutine负责一个shard的传送任务
 		go func(shardId int, gid int) {
-			if servers, ok := kv.config.Groups[gid]; ok {
-				// 寻找group中的leader
-				for si := 0; si < len(servers); si++ {
-					kv.mu.Lock()
-					// 结束条件
-					if configNum != kv.config.Num || kv.auth[shardId] == false || kv.killed() {
-						kv.mu.Unlock()
-						return
-					}
-					// 拷贝
-					Table := make(map[int64]Ans)
-					Kv := make(map[string]string)
-					for cid, ans := range kv.replyTable[shardId] {
-						// 保留put结果,Get结果可以丢弃
-						if ans.Reply == "" {
-							Table[cid] = Ans{
-								Seq:   ans.Seq,
-								Reply: "",
+			for {
+				servers, ok := kv.config.Groups[gid]
+				if ok {
+					// 寻找group中的leader
+					for si := 0; si < len(servers); si++ {
+						kv.mu.Lock()
+						// 结束条件
+						if configNum != kv.config.Num || kv.auth[shardId] == NO || kv.killed() {
+							kv.mu.Unlock()
+							return
+						}
+						// 准备
+						Table := make(map[int64]Ans)
+						Kv := make(map[string]string)
+						// 防止重复put: G1在旧config应用put,client超时,新config出现,G1传递kv,put在G2再次应用
+						// replyTable也需要传递，防止重复put,get的reply可以不保留，节省带宽
+						for cid, ans := range kv.replyTable[shardId] {
+							// 保留put结果,Get结果可以丢弃
+							if ans.Reply == "" {
+								Table[cid] = Ans{
+									Seq:   ans.Seq,
+									Reply: "",
+								}
 							}
 						}
-					}
-					for k, v := range kv.kvStore[shardId] {
-						Kv[k] = v
-					}
-					// 准备
-					srv := kv.make_end(servers[si])
-					args := ShardKvsArgs{
-						ConfigNum: configNum,
-						Shard:     shardId,
-						Kv:        Kv,
-						Table:     Table,
-					}
-					var reply ShardKvsReply
-					kv.mu.Unlock()
-					// 解耦
-					Debug_(dDrop, "G%d S%d [SKV]-> G%d S%d Sid %d CfgId %d auth %v",
-						kv.gid, kv.me, gid, si, shardId, kv.config.Num, kv.auth[shardId])
-					ok := srv.Call("ShardKV.ShardKvs", &args, &reply)
-					Debug_(dDrop, "G%d S%d [SKV]-> G%d S%d Sid %d CfgId %d Err %s kv %v table %v",
-						kv.gid, kv.me, gid, si, shardId, kv.config.Num, reply.Err, Kv, Table)
-
-					kv.mu.Lock()
-					if ok && reply.Err == OK && kv.config.Num == configNum && kv.auth[shardId] {
-						// 放权log  保证集群状态一致
-						OP := Op{
-							Type:      Release,
-							ConfigNum: configNum,
-							ShardIdx:  shardId,
+						for k, v := range kv.kvStore[shardId] {
+							Kv[k] = v
 						}
-						kv.CommitQueue = append(kv.CommitQueue, OP)
+						// 封装
+						srv := kv.make_end(servers[si])
+						args := ShardKvsArgs{
+							ConfigNum: configNum,
+							Shard:     shardId,
+							Kv:        Kv,
+							Table:     Table,
+						}
+						var reply ShardKvsReply
+						kv.mu.Unlock()
+						// 解耦
+						Debug_(dDrop, "G%d S%d [SKV]-> G%d S%d Sid %d CfgId %d auth %v",
+							kv.gid, kv.me, gid, si, shardId, kv.config.Num, kv.auth[shardId])
+						ok := srv.Call("ShardKV.ShardKvs", &args, &reply)
+						Debug_(dDrop, "G%d S%d [SKV]-> G%d S%d Sid %d CfgId %d Err %s kv %v table %v",
+							kv.gid, kv.me, gid, si, shardId, kv.config.Num, reply.Err, Kv, Table)
+
+						kv.mu.Lock()
+						if ok && reply.Err == OK && kv.config.Num == configNum && kv.auth[shardId] == Sending {
+							// 放权log  保证集群状态一致
+							OP := Op{
+								Type:      Release,
+								ConfigNum: configNum,
+								ShardIdx:  shardId,
+							}
+							kv.CommitQueue = append(kv.CommitQueue, OP)
+							kv.mu.Unlock()
+							return
+						}
+						kv.mu.Unlock()
 					}
-					kv.mu.Unlock()
+				} else {
+					return
 				}
 			}
-			//}
 		}(shard, gid)
+		kv.auth[shard] = Sending
 	}
 }
 
@@ -199,7 +216,7 @@ func (kv *ShardKV) Get(args *GetArgs, reply *GetReply) {
 	}
 	// 此时config正确但是还没有操作权
 	// 需要等待获取KVs
-	if kv.auth[shard] == false {
+	if kv.auth[shard] == NO {
 		t0 := time.Now()
 		kv.mu.Unlock()
 		for {
@@ -210,7 +227,7 @@ func (kv *ShardKV) Get(args *GetArgs, reply *GetReply) {
 				Debug_(dClient, "G%d S%d NoAuth! Sid %d", kv.gid, kv.me, shard)
 				return
 			}
-			if kv.auth[shard] {
+			if kv.auth[shard] == YES {
 				break
 			}
 			kv.mu.Unlock()
@@ -310,8 +327,9 @@ func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 		//kv.mu.Unlock()
 		return
 	}
+	// TODO 测试点
 	// config正确但是还没有操作权
-	if kv.auth[shard] == false {
+	if kv.auth[shard] == NO {
 		kv.mu.Unlock()
 		t0 := time.Now()
 		for {
@@ -322,7 +340,7 @@ func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 				return
 			}
 			// 有操作权了
-			if kv.auth[shard] {
+			if kv.auth[shard] == YES {
 				break
 			}
 			kv.mu.Unlock()
@@ -375,6 +393,7 @@ func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 			return
 		}
 		kv.mu.Unlock()
+		// TODO 测试点
 		//time.Sleep(5 * time.Millisecond)
 	}
 }
@@ -393,13 +412,13 @@ func (kv *ShardKV) killed() bool {
 	return z == 1
 }
 
-func (kv *ShardKV) Decode(serverState []byte) (int, []map[int64]Ans, []map[string]string, shardctrler.Config, []bool) {
+func (kv *ShardKV) Decode(serverState []byte) (int, []map[int64]Ans, []map[string]string, shardctrler.Config, []int) {
 	r := bytes.NewBuffer(serverState)
 	d := labgob.NewDecoder(r)
 	var index int
 	var table []map[int64]Ans
 	var store []map[string]string
-	var auth []bool
+	var auth []int
 	var Config shardctrler.Config
 	if d.Decode(&index) != nil || d.Decode(&table) != nil ||
 		d.Decode(&store) != nil || d.Decode(&Config) != nil || d.Decode(&auth) != nil {
@@ -407,7 +426,7 @@ func (kv *ShardKV) Decode(serverState []byte) (int, []map[int64]Ans, []map[strin
 	}
 	return index, table, store, Config, auth
 }
-func (kv *ShardKV) Encode(index int, replyTable []map[int64]Ans, kvStore []map[string]string, Config shardctrler.Config, auth []bool) []byte {
+func (kv *ShardKV) Encode(index int, replyTable []map[int64]Ans, kvStore []map[string]string, Config shardctrler.Config, auth []int) []byte {
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
 	if e.Encode(index) != nil || e.Encode(replyTable) != nil ||
@@ -420,8 +439,9 @@ func (kv *ShardKV) Encode(index int, replyTable []map[int64]Ans, kvStore []map[s
 
 // 持久化 SnapIndex replyTable kvStore reConfigs auth
 // snapshotValid==false -> 代表maxraftstate==-1,不持久化snapshot
-// raftValid==true -> 更新底层raft的commitIndex,raft可以触发InstallSnapshot
-// raftValid==false -> 不更新底层raft的commitIndex,节省网络带宽
+// raftValid==true -> 更新底层raft的commitIndex,同时进行raft log的持久化,raft可以触发InstallSnapshot
+// raftValid==false -> 不更新底层raft的commitIndex,只进行raft log的持久化,节省网络带宽
+// aof 机制 每次执行的指令都需要持久化,不然shutdownGroup之后信息丢失
 func (kv *ShardKV) persist(raftValid bool, snapshotValid bool) {
 	switch snapshotValid {
 	case true:
@@ -453,18 +473,18 @@ func (kv *ShardKV) checkAccept(shards [shardctrler.NShards]int) map[int]int {
 	df := make(map[int]int)
 	oldconfig := kv.sm.Query(kv.config.Num - 1)
 	for i := 0; i < shardctrler.NShards; i++ {
-		if shards[i] == kv.gid && kv.auth[i] == false {
+		if shards[i] == kv.gid && kv.auth[i] == NO {
 			df[i] = oldconfig.Shards[i]
 		}
 	}
 	return df
 }
 
-// 检查需要接受的Kvs
+// 检查需要发送的Kvs
 func (kv *ShardKV) checkSend(shards [shardctrler.NShards]int) map[int]int {
 	df := make(map[int]int)
 	for i := 0; i < shardctrler.NShards; i++ {
-		if shards[i] != kv.gid && kv.auth[i] == true {
+		if shards[i] != kv.gid && kv.auth[i] != NO {
 			df[i] = shards[i]
 		}
 	}
@@ -473,6 +493,9 @@ func (kv *ShardKV) checkSend(shards [shardctrler.NShards]int) map[int]int {
 
 func (kv *ShardKV) detectCommit() {
 	for apply := range kv.applyCh {
+		if kv.killed() {
+			return
+		}
 		if apply.SnapshotValid {
 			Debug_(dSnap, "G%d S%d [Snap] SnapId %d NSI %d CfgId %d snapshot %d",
 				kv.gid, kv.me, apply.SnapshotIndex, kv.SnapIndex, kv.config.Num, len(apply.Snapshot))
@@ -488,7 +511,7 @@ func (kv *ShardKV) detectCommit() {
 			continue
 		}
 		// nop
-		if apply.Command == -1 {
+		if apply.Command == nil {
 			if apply.CommandIndex > kv.SnapIndex {
 				kv.SnapIndex++
 			}
@@ -523,10 +546,10 @@ func (kv *ShardKV) detectCommit() {
 		case Accept:
 			// 检查 添加kvs
 			if kv.config.Shards[command.ShardIdx] == kv.gid &&
-				kv.auth[command.ShardIdx] == false &&
+				kv.auth[command.ShardIdx] == NO &&
 				kv.config.Num == command.ConfigNum {
 
-				kv.auth[command.ShardIdx] = true
+				kv.auth[command.ShardIdx] = YES
 				kv.replyTable[command.ShardIdx] = make(map[int64]Ans)
 				kv.kvStore[command.ShardIdx] = make(map[string]string)
 				if command.Kv != nil {
@@ -555,9 +578,9 @@ func (kv *ShardKV) detectCommit() {
 			kv.mu.Unlock()
 			continue
 		case Release:
-			if command.ConfigNum == kv.config.Num && kv.auth[command.ShardIdx] {
+			if command.ConfigNum == kv.config.Num && kv.auth[command.ShardIdx] != NO {
 				Debug_(dDrop, "G%d S%d [Release] Sid %d CfgId %d", kv.gid, kv.me, command.ShardIdx, kv.config.Num)
-				kv.auth[command.ShardIdx] = false
+				kv.auth[command.ShardIdx] = NO
 				kv.kvStore[command.ShardIdx] = nil
 				kv.replyTable[command.ShardIdx] = nil
 				if kv.maxraftstate != -1 {
@@ -578,7 +601,7 @@ func (kv *ShardKV) detectCommit() {
 			Debug_(dPersist, "G%d S%d COMMIT-PRE [%s] Cid %d Seq %d Key [%s] Value [%s] extra [%s] sseq %d auth %v sbelog %d",
 				kv.gid, kv.me, command.Type, command.ClientId%10000, command.Seq, command.Key, kv.kvStore[shard][command.Key], command.Value,
 				kv.replyTable[shard][command.ClientId].Seq, kv.auth[shard], kv.config.Shards[shard])
-			if command.Seq <= kv.replyTable[shard][command.ClientId].Seq || !kv.auth[shard] {
+			if command.Seq <= kv.replyTable[shard][command.ClientId].Seq || kv.auth[shard] != YES {
 				kv.mu.Unlock()
 				continue
 			}
@@ -589,7 +612,7 @@ func (kv *ShardKV) detectCommit() {
 			Debug_(dPersist, "G%d S%d COMMIT-PRE [%s] Cid %d Seq %d Key [%s] Value [%s] extra [%s] sseq %d auth %v sbelog %d",
 				kv.gid, kv.me, command.Type, command.ClientId%10000, command.Seq, command.Key, kv.kvStore[shard][command.Key], command.Value,
 				kv.replyTable[shard][command.ClientId].Seq, kv.auth[shard], kv.config.Shards[shard])
-			if command.Seq <= kv.replyTable[shard][command.ClientId].Seq || !kv.auth[shard] {
+			if command.Seq <= kv.replyTable[shard][command.ClientId].Seq || kv.auth[shard] != YES {
 				kv.mu.Unlock()
 				continue
 			}
@@ -598,7 +621,7 @@ func (kv *ShardKV) detectCommit() {
 			Debug_(dPersist, "G%d S%d COMMIT-PRE [%s] Cid %d Seq %d Key [%s] Value [%s] extra [%s] sseq %d auth %v sbelog %d",
 				kv.gid, kv.me, command.Type, command.ClientId%10000, command.Seq, command.Key, kv.kvStore[shard][command.Key], command.Value,
 				kv.replyTable[shard][command.ClientId].Seq, kv.auth[shard], kv.config.Shards[shard])
-			if command.Seq <= kv.replyTable[shard][command.ClientId].Seq || !kv.auth[shard] {
+			if command.Seq <= kv.replyTable[shard][command.ClientId].Seq || kv.auth[shard] != YES {
 				kv.mu.Unlock()
 				continue
 			}
@@ -715,7 +738,7 @@ func (kv *ShardKV) checkNewConfig() {
 			}
 		}
 		kv.reConfigs = append(kv.reConfigs, newConfig)
-		// 原始config变化时需要初始化auth
+		// 原始config(config 0)变化时(config 1)需要初始化auth
 		if kv.config.Num == 0 {
 			// config Num 变成1
 			kv.config = kv.reConfigs[0]
@@ -724,7 +747,7 @@ func (kv *ShardKV) checkNewConfig() {
 			Debug_(dLeader, "G%d S%d NEW CONFIG! CfgId %d %v", kv.gid, kv.me, kv.config.Num, kv.config)
 			for k, v := range kv.config.Shards {
 				if v == kv.gid {
-					kv.auth[k] = true
+					kv.auth[k] = YES
 				}
 				kv.replyTable[k] = make(map[int64]Ans)
 				kv.kvStore[k] = make(map[string]string)
@@ -752,7 +775,7 @@ func (kv *ShardKV) detectReconfiguration() {
 func (kv *ShardKV) detectCommitQueue() {
 	for !kv.killed() {
 		if len(kv.CommitQueue) == 0 {
-			time.Sleep(2 * time.Millisecond)
+			time.Sleep(5 * time.Millisecond)
 			continue
 		}
 		Debug_(dInfo, "G%d S%d [Commit] OP %v ", kv.gid, kv.me, kv.CommitQueue[0])
@@ -809,7 +832,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 		kv.replyTable[i] = nil
 		kv.kvStore[i] = nil
 	}
-	kv.auth = make([]bool, shardctrler.NShards)
+	kv.auth = make([]int, shardctrler.NShards)
 	kv.once = true
 
 	// Use something like this to talk to the shardctrler:
@@ -817,9 +840,16 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 
 	kv.applyCh = make(chan raft.ApplyMsg)
 	kv.rf = raft.Make(servers, me, persister, kv.applyCh)
+	// config从0开始,不然过不了没有snapshot的test
 	kv.config = kv.sm.Query(0)
 
 	kv.readPersister(persister.ReadSnapshot())
+	// 重启之后,更新auth状态,重启一对一的发送goroutine
+	for i := 0; i < len(kv.auth); i++ {
+		if kv.auth[i] == Sending {
+			kv.auth[i] = YES
+		}
+	}
 
 	Debug_(dClient, "G%d S%d Start CfgId %d auth %v SNI %d",
 		kv.gid, kv.me, kv.config.Num, kv.auth, kv.SnapIndex)

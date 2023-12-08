@@ -148,7 +148,7 @@ func TestBasicAgree2B(t *testing.T) {
 	cfg.end()
 }
 
-// check, based on counting bytes of RPCs, that
+// check, based on counting bytes of RPCs, thatz
 // each command is sent to each peer just once.
 func TestRPCBytes2B(t *testing.T) {
 	servers := 3

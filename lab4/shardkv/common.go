@@ -21,6 +21,11 @@ const (
 	Append         = "Append"
 	Get            = "Get"
 )
+const (
+	YES = iota
+	NO
+	Sending
+)
 
 type Err string
 

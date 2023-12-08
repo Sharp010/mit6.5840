@@ -270,7 +270,7 @@ func (kv *KVServer) detectCommit() {
 			continue
 		}
 		// nop 忽略
-		if apply.Command == -1 {
+		if apply.Command == nil {
 			if apply.CommandIndex > kv.SnapIndex {
 				kv.SnapIndex++
 			}

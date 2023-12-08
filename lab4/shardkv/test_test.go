@@ -2,6 +2,7 @@ package shardkv
 
 import (
 	"6.5840/porcupine"
+	"log"
 )
 import "6.5840/models"
 import "testing"
@@ -810,8 +811,8 @@ func TestChallenge1Delete(t *testing.T) {
 		for i := 0; i < cfg.n; i++ {
 			raft := cfg.groups[gi].saved[i].RaftStateSize()
 			snap := len(cfg.groups[gi].saved[i].ReadSnapshot())
-			//log.Printf("raft size %d", raft)
-			//log.Printf("snap size %d", snap)
+			log.Printf("raft size %d", raft)
+			log.Printf("snap size %d\n", snap)
 			total += raft + snap
 		}
 	}
